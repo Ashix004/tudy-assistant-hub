@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>AI Study Assistant Hub</title>
+  <style>
+    :root {
+      --bg: #f6f8fa;
+      --text: #333;
+      --card-bg: #ffffff;
+      --header-bg: linear-gradient(to right, #8e2de2, #4a00e0);
+      --input-bg: #f4f4f4;
+      --output-bg: #f0efff;
+      --output-border: #d8d5ff;
+    }
+
+    .dark {
+      --bg: #121212;
+      --text: #eaeaea;
+      --card-bg: #1f1f1f;
+      --header-bg: linear-gradient(to right, #3a0ca3, #7209b7);
+      --input-bg: #2a2a2a;
+      --output-bg: #1e1e2f;
+      --output-border: #444;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    header {
+      padding: 1rem;
+      text-align: center;
+      background: var(--header-bg);
+      color: #fff;
+    }
+
+    .section {
+      background: var(--card-bg);
+      margin: 2rem auto;
+      padding: 1.5rem;
+      max-width: 800px;
+      border-radius: 1rem;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      background: var(--input-bg);
+      color: var(--text);
+      resize: vertical;
+    }
+
+    .output {
+      background: var(--output-bg);
+      border: 1px solid var(--output-border);
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 8px;
+      min-height: 80px;
+    }
+
+    .btn-blue, .btn-teal, .btn-orange {
+      padding: 0.6rem 1.2rem;
+      margin-top: 0.5rem;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+
+    .btn-blue {
+      background: #4a90e2;
+      box-shadow: 0 4px 10px rgba(74, 144, 226, 0.3);
+    }
+
+    .btn-blue:hover {
+      background: #357acb;
+    }
+
+    .btn-teal {
+      background: #2ac6b4;
+      box-shadow: 0 4px 10px rgba(42, 198, 180, 0.3);
+    }
+
+    .btn-teal:hover {
+      background: #21a699;
+    }
+
+    .btn-orange {
+      background: #ff9f43;
+      box-shadow: 0 4px 10px rgba(255, 159, 67, 0.3);
+    }
+
+    .btn-orange:hover {
+      background: #e68c38;
+    }
+
+    select {
+      padding: 0.4rem 1rem;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.9rem;
+      color: #888;
+      margin: 2rem 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>AI Study Assistant Hub</h1>
+    <p>Explain Topics | Clean Notes | Polish Answers</p>
+  </header>
+
+  <div style="text-align: center; margin-top: 1rem;">
+    <label for="theme-select"><strong>Theme:</strong></label>
+    <select id="theme-select" onchange="changeTheme(this.value)">
+      <option value="system">System Default</option>
+      <option value="light">Light</option>
+      <option value="dark">Dark</option>
+    </select>
+  </div>
+
+  <!-- Explain Section -->
+  <div class="section">
+    <h2>🔍 Explain Topic</h2>
+    <textarea id="explainInput" placeholder="Enter a topic you want explained..."></textarea>
+    <button class="btn-blue" onclick="generateExplain()">Generate with AI</button>
+    <div class="output" id="explainOutput">Your explanation will appear here...</div>
+  </div>
+
+  <!-- Clean Notes Section -->
+  <div class="section">
+    <h2>🧹 Clean Notes</h2>
+    <textarea id="cleanInput" placeholder="Paste your messy notes here..."></textarea>
+    <button class="btn-teal" onclick="generateClean()">Generate with AI</button>
+    <div class="output" id="cleanOutput">Your cleaned notes will appear here...</div>
+  </div>
+
+  <!-- Polish Answer Section -->
+  <div class="section">
+    <h2>🪄 Polish Answer</h2>
+    <textarea id="polishInput" placeholder="Paste your rough answer here..."></textarea>
+    <button class="btn-orange" onclick="generatePolish()">Generate with AI</button>
+    <div class="output" id="polishOutput">Your polished answer will appear here...</div>
+  </div>
+
+  <footer>© 2025 AI Study Assistant. Built with ❤️ and JavaScript.</footer>
+
+  <script>
+    // Theme switching
+    function changeTheme(theme) {
+      localStorage.setItem('theme', theme);
+      applyTheme(theme);
+    }
+
+    function applyTheme(theme) {
+      if (theme === "dark") {
+        document.documentElement.classList.add("dark");
+      } else if (theme === "light") {
+        document.documentElement.classList.remove("dark");
+      } else {
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.classList.toggle("dark", prefersDark);
+      }
+    }
+
+    const savedTheme = localStorage.getItem('theme') || 'system';
+    document.getElementById('theme-select').value = savedTheme;
+    applyTheme(savedTheme);
+
+    window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", e => {
+      if (localStorage.getItem('theme') === "system") {
+        applyTheme("system");
+      }
+    });
+
+    // Dummy AI Responses (Replace with real API calls if needed)
+    function generateExplain() {
+      const input = document.getElementById('explainInput').value;
+      document.getElementById('explainOutput').innerText = `Explaining "${input}"... (AI response here)`;
+    }
+
+    function generateClean() {
+      const input = document.getElementById('cleanInput').value;
+      document.getElementById('cleanOutput').innerText = `Cleaning your notes... (AI response here)`;
+    }
+
+    function generatePolish() {
+      const input = document.getElementById('polishInput').value;
+      document.getElementById('polishOutput').innerText = `Polishing your answer... (AI response here)`;
+    }
+  </script>
+</body>
+</html>
